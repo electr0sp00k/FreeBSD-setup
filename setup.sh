@@ -66,6 +66,7 @@ ngctl connect $WAN: TEE_WAN: lower right
 
 # Set up one2many for mirror interface
 ngctl mkpeer $MIRROR: one2many lower one
+ngctl name hn2:lower O2M
 ngctl connect TEE_LAN: O2M: right2left many0
 ngctl connect TEE_WAN: O2M: right2left many1
 
