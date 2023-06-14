@@ -18,6 +18,9 @@ ifconfig $LAN inet 192.168.1.1 netmask 255.255.255.0
 # Make IP setting persistent
 echo "ifconfig_$LAN=\"inet 192.168.1.1 netmask 255.255.255.0\"" >> /etc/rc.conf
 
+ifconfig $LAN up
+ifconfig $LAN promisc
+
 # Enable dnsmasq on boot
 sysrc dnsmasq_enable="YES"
 
