@@ -109,6 +109,16 @@ service pf start
 # Load PF rules
 pfctl -f /etc/pf.conf
 
+# MIRROR INTERFACES
+# mirrors all traffic from LAN to MIRROR_LAN
+# mirrors all traffic from WAN to MIRROR_WAN
+# makes sure sensor server is is promisc mode as the ethernet frames
+# are mirrored raw without any processing
+# You can also read traffic from the router using:
+# tcpdump -i MIRROR_LAN -e -n
+# or
+# tcpdump -i MIRROR_WAN -e -n
+
 if [ "$OPTION_MIRRORLAN" = "YES" ]; then
     # Load ng_tee and ng_ether
     kldload ng_ether
@@ -127,35 +137,35 @@ if [ "$OPTION_MIRRORLAN" = "YES" ]; then
 
     # Create /usr/local/etc/rc.d/ngsetupLAN
     echo '#!/bin/sh
-    #
-    # PROVIDE: ngsetupLAN
-    # REQUIRE: NETWORKING
-    # KEYWORD: shutdown
-    #
-    # Add the following lines to /etc/rc.conf to enable ngsetupLAN:
-    #
-    #ngsetupLAN_enable="YES"
+#
+# PROVIDE: ngsetupLAN
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable ngsetupLAN:
+#
+#ngsetupLAN_enable="YES"
 
-    . /etc/rc.subr
+. /etc/rc.subr
 
-    name="ngsetupLAN"
-    start_cmd="${name}_start"
+name="ngsetupLAN"
+start_cmd="${name}_start"
 
-    ngsetup_start() {
-        kldload ng_ether
-        kldload ng_tee
-        ngctl mkpeer '${LAN}': tee upper left
-        ngctl name '${LAN}':upper TEE_LAN
-        ngctl connect '${LAN}': TEE_LAN: lower right
-        ngctl mkpeer '${MIRROR_LAN}': one2many lower one
-        ngctl name '${MIRROR_LAN}':lower O2M_LAN
-        ngctl connect TEE_LAN: O2M_LAN: right2left many0
-        ngctl connect TEE_LAN: O2M_LAN: left2right many1
-    }
+ngsetupLAN_start() {
+    kldload ng_ether
+    kldload ng_tee
+    ngctl mkpeer '${LAN}': tee upper left
+    ngctl name '${LAN}':upper TEE_LAN
+    ngctl connect '${LAN}': TEE_LAN: lower right
+    ngctl mkpeer '${MIRROR_LAN}': one2many lower one
+    ngctl name '${MIRROR_LAN}':lower O2M_LAN
+    ngctl connect TEE_LAN: O2M_LAN: right2left many0
+    ngctl connect TEE_LAN: O2M_LAN: left2right many1
+}
 
-    load_rc_config $name
-    run_rc_command "$1"
-    ' > /usr/local/etc/rc.d/ngsetupLAN
+load_rc_config $name
+run_rc_command "$1"
+' > /usr/local/etc/rc.d/ngsetupLAN
     chmod +x /usr/local/etc/rc.d/ngsetupLAN
 
     # Enable ngsetup on boot
@@ -183,35 +193,35 @@ if [ "$OPTION_MIRRORWAN" = "YES" ]; then
 
     # Create /usr/local/etc/rc.d/ngsetupWAN
     echo '#!/bin/sh
-    #
-    # PROVIDE: ngsetupWAN
-    # REQUIRE: NETWORKING
-    # KEYWORD: shutdown
-    #
-    # Add the following lines to /etc/rc.conf to enable ngsetupWAN:
-    #
-    #ngsetupWAN_enable="YES"
+#
+# PROVIDE: ngsetupWAN
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to enable ngsetupWAN:
+#
+#ngsetupWAN_enable="YES"
 
-    . /etc/rc.subr
+. /etc/rc.subr
 
-    name="ngsetupWAN"
-    start_cmd="${name}_start"
+name="ngsetupWAN"
+start_cmd="${name}_start"
 
-    ngsetup_start() {
-        kldload ng_ether
-        kldload ng_tee
-        ngctl mkpeer '${WAN}': tee upper left
-        ngctl name '${WAN}':upper TEE_WAN
-        ngctl connect '${WAN}': TEE_WAN: lower right
-        ngctl mkpeer '${MIRROR_WAN}': one2many lower one
-        ngctl name '${MIRROR_WAN}':lower O2M_WAN
-        ngctl connect TEE_WAN: O2M_WAN: right2left many0
-        ngctl connect TEE_WAN: O2M_WAN: left2right many1
-    }
+ngsetupWAN_start() {
+    kldload ng_ether
+    kldload ng_tee
+    ngctl mkpeer '${WAN}': tee upper left
+    ngctl name '${WAN}':upper TEE_WAN
+    ngctl connect '${WAN}': TEE_WAN: lower right
+    ngctl mkpeer '${MIRROR_WAN}': one2many lower one
+    ngctl name '${MIRROR_WAN}':lower O2M_WAN
+    ngctl connect TEE_WAN: O2M_WAN: right2left many0
+    ngctl connect TEE_WAN: O2M_WAN: left2right many1
+}
 
-    load_rc_config $name
-    run_rc_command "$1"
-    ' > /usr/local/etc/rc.d/ngsetupWAN
+load_rc_config $name
+run_rc_command "$1"
+' > /usr/local/etc/rc.d/ngsetupWAN
     chmod +x /usr/local/etc/rc.d/ngsetupWAN
 
     # Enable ngsetup on boot
@@ -220,6 +230,15 @@ if [ "$OPTION_MIRRORWAN" = "YES" ]; then
     sysrc ifconfig_${MIRROR_WAN}=up
     ifconfig ${MIRROR_WAN} up
 fi
+
+#DARKSTAT! AWESOME!
+#Listens on WAN port 67 and records data on traffic flow and does stuff
+#connect to the ip of WAN you should be able to connect to it if WAN is hyperV
+#default port (your machine is connected to the WAN interface in Windows).
+#Otherwise you can check on loopback on the router using:
+# curl 127.0.0.1:67 | w3m -dump -T text/html
+#Has some cool functionality including stats on IPs and their traffic
+#I sent 12,245 ping packets to yahoo before they blocked me permanently
 
 
 if [ "${OPTION_DARKSTAT}" = "YES" ]; then
