@@ -191,7 +191,7 @@ if [ "$OPTION_MIRRORWAN" = "YES" ]; then
     ngctl connect TEE_WAN: O2M_WAN: right2left many0
     ngctl connect TEE_WAN: O2M_WAN: left2right many1
 
-    # Create /usr/local/etc/rc.d/ngsetupWAN
+    # Create /usr/local/etc/rc.d/ngsetupWAN 
     echo '#!/bin/sh
 #
 # PROVIDE: ngsetupWAN
