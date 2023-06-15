@@ -118,6 +118,23 @@ pfctl -f /etc/pf.conf
 # tcpdump -i MIRROR_LAN -e -n
 # or
 # tcpdump -i MIRROR_WAN -e -n
+#
+#
+# NG is awesome, and its a built in utility. I played around with it while
+# getting the mirrored ports setup, and damn it has amazing functionality.
+# it can send data to sockets for user processes to use, you  can message
+# each node and get informatiom; for example ngctl msg TEE_LAN: getstats
+# will return the number of frames that have traveled through each hook
+# on the tee node. The only nuisance with these things is that they are
+# not persistent and a setup script has to be added so that they work on boot
+# hence adding the script to /usr/local/etc/rc.d. But after that, the script
+# can be set up to start on boot and implement the same netgraph as described
+# also try ngctl dot, it returns a graphviz representation of the netgraph to
+# stdout, but you can pipe it to a utility that will display it as a graph.
+# additionaly, with the one2many node, you could send all traffic from as many
+# ethernet ports as youd like to one port.
+# there is also a bpf node which can filter packets based on bpf rules which is
+# cool. I think that it should be covered in the class as it's own module
 
 if [ "$OPTION_MIRRORLAN" = "YES" ]; then
     # Load ng_tee and ng_ether
@@ -191,7 +208,7 @@ if [ "$OPTION_MIRRORWAN" = "YES" ]; then
     ngctl connect TEE_WAN: O2M_WAN: right2left many0
     ngctl connect TEE_WAN: O2M_WAN: left2right many1
 
-    # Create /usr/local/etc/rc.d/ngsetupWAN 
+    # Create /usr/local/etc/rc.d/ngsetupWAN
     echo '#!/bin/sh
 #
 # PROVIDE: ngsetupWAN
