@@ -81,7 +81,7 @@ include \"/etc/pf.blockrules.conf\"
 
 pass in on \$int_if from \$int_if:network to any
 pass out on \$ext_if from any to any
-" >> /etc/pf.conf
+" > /etc/pf.conf
 
 #Firewall rules go in /etc/pf.blockrules.conf
 #use the quick keyword to drop packet immediately
