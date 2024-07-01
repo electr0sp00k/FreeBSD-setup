@@ -173,3 +173,6 @@ Configure options for additional features:
 - Ensure to have at least two network interfaces (LAN and WAN) connected appropriately. Additional interfaces for mirroring are optional but should be separate Ethernet interfaces.
 
 By following the steps and configurations provided in this README, you can successfully set up your FreeBSD machine as a versatile virtual network appliance.
+
+### License
+This project is released under the MIT license, please see the [LICENSE](LICENSE.txt) file for details.
