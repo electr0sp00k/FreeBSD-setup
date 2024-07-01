@@ -2,7 +2,7 @@
 
 ## Overview
 
-This shell script, created by Teo Coffman for the CS 596 - Network Security course, is designed to transform a FreeBSD machine into a virtual network appliance. The script installs and configures essential network utilities and configurations, enabling the FreeBSD machine to function as a router with added features like switching, port mirroring, DHCP/DNS services, firewall, NAT, and flow monitoring.
+This shell script is designed to transform a FreeBSD machine into a virtual network appliance. The script installs and configures essential network utilities and configurations, enabling the FreeBSD machine to function as a router with added features like switching, port mirroring, DHCP/DNS services, firewall, NAT, and flow monitoring.
 
 ## Features
 
